@@ -21,14 +21,12 @@ def update(sites, prob):
     :return: 1D numpy array, updated row of length len(S)
     """
     size = len(sites)  # number of sites to get the connections right
-    newlist = np.array([0] * size)
+    newlist = np.zeros(size)
     for i in range(size):
         # get a 1 only if:
         # 1) a neighbour is infected
         # 2) the probability function returns 1 rather than 0
-        infect1 = random.random() < prob * sites[i]
-        infect2 = random.random() < prob * sites[(i + 1) % size]  # periodic boundary condition
-        newlist[i] = infect1 or infect2
+        newlist[i] = (random.random() < prob and sites[i]) or random.random() < prob and sites[(i + 1) % size]
     return newlist
 
 
@@ -49,14 +47,12 @@ def singleRun(latsize, numiter, prob):
     :return: 1D numpy array of size numiter, containing the density at each time step
     """
     lattice = np.array([1] * latsize)  # initialize lattice
-    densities = [density(lattice)]  # insert initial density
-    # densities = np.array([0] * (numiter + 1))  # create density array of proper size to prevent "append" usage
-    # densities[0] = density(lattice)  # insert initial density
+    densities = np.zeros(numiter + 1)  # create density array of proper size to prevent "append" usage
+    densities[0] = density(lattice)  # insert initial density
     for j in range(numiter):
         lattice = update(lattice, prob)
         dens = density(lattice)
-        densities.append(dens)
-        # densities[j+1] = dens
+        densities[j+1] = dens
     return densities
 
 
@@ -66,12 +62,12 @@ if __name__ == "__main__":
     ########################
     N = 1000  # lattice size
     T = 1000  # number of iterations per run
-    M = 1000  # number of runs
+    M = 10000  # number of runs
     p = 0.6447  # infection probability
     ########################
     # csv file parameters
     ########################
-    alldens = [0] * M  # matrix to store the density arrays of all runs
+    alldens = [0] * M   # matrix to store the density arrays of all runs
     root_dir = os.path.dirname(os.path.abspath(__file__))
     # path to file to store the density information for all runs, by default in project directory
     filename = 'perco_p%f_N%d_T%d_M%d_%s.csv' % (p, N, T, M, datetime.now().strftime("%H--%M--%S"))
@@ -80,6 +76,7 @@ if __name__ == "__main__":
     #########################
     # start procedure
     #########################
+    starttime = datetime.now()
     f = open(filepath, 'w', newline='')
     csvwrite = csv.writer(f)
     currentdens = []  # storage for the current run's density array
@@ -87,6 +84,7 @@ if __name__ == "__main__":
         currentdens = singleRun(N, T, p)  # get the current run's density info
         alldens[numrun] = currentdens
         csvwrite.writerow(currentdens)
-        print("Finished simulation %d / %d" % (numrun + 1, M))
+        print("Finished run %d / %d" % (numrun + 1, M))
     f.close()  # close csv file
-    print("Finished the simulation!")
+    endtime = datetime.now()
+    print("End of simulation! Elapsed time: %s" % (endtime-starttime))

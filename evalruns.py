@@ -12,8 +12,7 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     # this path needs to be changed locally
-    # filepath = "C:\\Users\\ivayl\\PycharmProjects\\Percolation\\perco_p0.644700_N1000_T1000_M100_17--41--10.csv"
-    filepath = "C:\\Users\\ivayl\\PycharmProjects\\Percolation\\perco_p0.644700_N1000_T1000_M1000_18--18--47.csv"
+    filepath = "C:\\Users\\ivayl\\PycharmProjects\\Percolation\\perco_p0.644700_N1000_T1000_M1000_22--49--43.csv"
 
     ###################################################
     # read csv file containing density info of all runs
